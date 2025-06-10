@@ -12,6 +12,7 @@ int fps = 60; // make this a macro if the fps is fixed
 
 void run_input_dispay(void);
 void render_screen(void);
+static bool persist(bool condition, int *counter);
 
 int main(int argc, char* args[]) {
     //Init SDL Stuff
@@ -36,6 +37,25 @@ void run_input_dispay()
     Uint32 starting_tick;
     
     SDL_Joystick *joy_1 = NULL;
+    
+    int left_counter       = 0;
+    int right_counter      = 0;
+    int up_counter         = 0;
+    int down_counter       = 0;
+    int up_left_counter    = 0;
+    int up_right_counter   = 0;
+    int down_left_counter  = 0;
+    int down_right_counter = 0;
+
+    bool left_hold       = false;
+    bool right_hold      = false;
+    bool up_hold         = false;
+    bool down_hold       = false;
+    bool up_left_hold    = false;
+    bool up_right_hold   = false;
+    bool down_left_hold  = false;
+    bool down_right_hold = false;
+    
     if (SDL_NumJoysticks() < 1)
     {
         std::cout << "No Joy\n";
@@ -68,44 +88,50 @@ void run_input_dispay()
 
             if (event.type == SDL_JOYHATMOTION)
             {
+                left_hold       = false;
+                right_hold      = false;
+                up_hold         = false;
+                down_hold       = false;
+                up_left_hold    = false;
+                up_right_hold   = false;
+                down_left_hold  = false;
+                down_right_hold = false;
+
+                if (event.jhat.value == SDL_HAT_CENTERED)
+                {
+                    std::cout << "joy center\n";
+                }
                 if (event.jhat.value == SDL_HAT_LEFT)
                 {
-                    std::cout << "joy left\n";
+                    left_hold = true;
                 }
-
                 if (event.jhat.value == SDL_HAT_RIGHT)
                 {
-                    std::cout << "joy right\n";
+                    right_hold = true;
                 }
-
                 if (event.jhat.value == SDL_HAT_UP)
                 {
-                    std::cout << "joy up\n";
+                    up_hold = true;
                 }
-
                 if (event.jhat.value == SDL_HAT_DOWN)
                 {
-                    std::cout << "joy down\n";
+                    down_hold = true;
                 }
-
-                if (event.jhat.value == SDL_HAT_RIGHTUP)
-                {
-                    std::cout << "joy up right\n";
-                }
-
-                if (event.jhat.value == SDL_HAT_RIGHTDOWN)
-                {
-                    std::cout << "joy down right\n";
-                }
-
                 if (event.jhat.value == SDL_HAT_LEFTUP)
                 {
-                    std::cout << "joy up left\n";
+                    up_left_hold = true;
                 }
-
+                if (event.jhat.value == SDL_HAT_RIGHTUP)
+                {
+                    up_right_hold = true;
+                }
                 if (event.jhat.value == SDL_HAT_LEFTDOWN)
                 {
-                    std::cout << "joy down left\n";
+                    down_left_hold = true;
+                }
+                if (event.jhat.value == SDL_HAT_RIGHTDOWN)
+                {
+                    down_right_hold = true;
                 }
             }
 
@@ -133,6 +159,41 @@ void run_input_dispay()
             }
         }
 
+        if (persist(left_hold, &left_counter))
+        {
+            std::cout << "joy left\n";
+        }
+
+        if (persist(right_hold, &right_counter))
+        {
+            std::cout << "joy right\n";
+        }
+
+        if (persist(up_hold, &up_counter))
+        {
+            std::cout << "joy up\n";
+        }
+        if (persist(down_hold, &down_counter))
+        {
+            std::cout << "joy down\n";
+        }
+        if (persist(up_left_hold, &up_left_counter))
+        {
+            std::cout << "joy up left\n";
+        }
+        if (persist(up_right_hold, &up_right_counter))
+        {
+            std::cout << "joy up right\n";
+        }
+        if (persist(down_left_hold, &down_left_counter))
+        {
+            std::cout << "joy down left\n";
+        }
+        if (persist(down_right_hold, &down_right_counter))
+        {
+            std::cout << "joy down right\n";
+        }
+
         render_screen();
 
         frame_cap(fps, starting_tick);
@@ -144,4 +205,25 @@ void render_screen(void)
     window.clear_render();
 
     window.render();
+}
+
+static bool persist(bool condition, int *counter)
+{
+    if (condition)
+    {
+        if (*counter < 3)
+        {
+            *counter += 1;
+        }
+        if (*counter >= 3)
+        {
+            return true;
+        }
+    }
+    else
+    {
+        *counter = 0;
+    }
+
+    return false;
 }
