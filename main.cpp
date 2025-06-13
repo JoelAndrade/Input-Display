@@ -7,11 +7,43 @@
 #include <SDL_CLasses.h>
 #include <SDL_Util.h>
 
+#define CONCAT(button_letter, num) button_letter##num
+#define RENDER_BUTTON_STATE(button_state, button_letter)\
+    if (button_state)\
+    CONCAT(button_letter, 2).render();\
+    else\
+    CONCAT(button_letter, 1).render();
+
+#define FPS (120)
+#define STICK_BUFFER (FPS/20)
+
 Window window;
-int fps = 60; // make this a macro if the fps is fixed
+
+TextureImage reference;
+
+TextureImage N;
+TextureImage E;
+TextureImage S;
+TextureImage W;
+TextureImage NW;
+TextureImage NE;
+TextureImage SW;
+TextureImage SE;
+TextureImage O;
+
+TextureImage A1;
+TextureImage A2;
+TextureImage B1;
+TextureImage B2;
+TextureImage C1;
+TextureImage C2;
+TextureImage D1;
+TextureImage D2;
+TextureImage DX;
 
 void run_input_dispay(void);
-void render_screen(void);
+void render_screen(stick_state_e stick_state, bool a_button, bool b_button, bool c_button, bool d_button);
+static void init_sprites(void);
 static bool persist(bool condition, int *counter);
 
 int main(int argc, char* args[]) {
@@ -20,6 +52,7 @@ int main(int argc, char* args[]) {
 
     window.init(1280, 720, "Input Display");
 
+    init_sprites();
     run_input_dispay();
 
     // Save and clean everything
@@ -35,9 +68,15 @@ void run_input_dispay()
 {
     SDL_Event event;
     Uint32 starting_tick;
-    
+
     SDL_Joystick *joy_1 = NULL;
-    
+
+    stick_state_t stick_state = Nuetral;
+    bool a_button = false;
+    bool b_button = false;
+    bool c_button = false;
+    bool d_button = false;
+
     int left_counter       = 0;
     int right_counter      = 0;
     int up_counter         = 0;
@@ -99,7 +138,6 @@ void run_input_dispay()
 
                 if (event.jhat.value == SDL_HAT_CENTERED)
                 {
-                    std::cout << "joy center\n";
                 }
                 if (event.jhat.value == SDL_HAT_LEFT)
                 {
@@ -139,83 +177,180 @@ void run_input_dispay()
             {
                 if (event.jbutton.button == 0)
                 {
-                    std::cout << "joy A\n";
+                    a_button = true;
                 }
 
                 if (event.jbutton.button == 3)
                 {
-                    std::cout << "joy B\n";
+                    b_button = true;
                 }
 
                 if (event.jbutton.button == 5)
                 {
-                    std::cout << "joy C\n";
+                    c_button = true;
                 }
 
                 if (event.jbutton.button == 4)
                 {
-                    std::cout << "joy D\n";
+                    d_button = true;
                 }
             }
+
+            if (event.type == SDL_JOYBUTTONUP)
+            {
+                if (event.jbutton.button == 0)
+                {
+                    a_button = false;
+                }
+
+                if (event.jbutton.button == 3)
+                {
+                    b_button = false;
+                }
+
+                if (event.jbutton.button == 5)
+                {
+                    c_button = false;
+                }
+
+                if (event.jbutton.button == 4)
+                {
+                    d_button = false;
+                }
+            }
+
+
         }
 
+        // Determine the state of the stick 
+        stick_state = Nuetral;
         if (persist(left_hold, &left_counter))
         {
-            std::cout << "joy left\n";
+            stick_state = West;
         }
 
         if (persist(right_hold, &right_counter))
         {
-            std::cout << "joy right\n";
+            stick_state = East;
         }
 
         if (persist(up_hold, &up_counter))
         {
-            std::cout << "joy up\n";
+            stick_state = North;
         }
         if (persist(down_hold, &down_counter))
         {
-            std::cout << "joy down\n";
+            stick_state = South;
         }
         if (persist(up_left_hold, &up_left_counter))
         {
-            std::cout << "joy up left\n";
+            stick_state = North_East;
         }
         if (persist(up_right_hold, &up_right_counter))
         {
-            std::cout << "joy up right\n";
+            stick_state = North_West;
         }
         if (persist(down_left_hold, &down_left_counter))
         {
-            std::cout << "joy down left\n";
+            stick_state = South_West;
         }
         if (persist(down_right_hold, &down_right_counter))
         {
-            std::cout << "joy down right\n";
+            stick_state = South_East;
         }
 
-        render_screen();
+        render_screen(stick_state, a_button, b_button, c_button, d_button);
 
-        frame_cap(fps, starting_tick);
+        frame_cap(FPS, starting_tick);
     }
 }
 
-void render_screen(void)
+void render_screen(stick_state_e stick_state, bool a_button, bool b_button, bool c_button, bool d_button)
 {
     window.clear_render();
 
+    switch (stick_state)
+    {
+    case North:
+        N.render();
+        break;
+    
+    case South:
+        S.render();
+        break;
+
+    case East:
+        E.render();
+        break;
+
+    case West:
+        W.render();
+        break;
+
+    case North_West:
+        NW.render();
+        break;
+    
+    case North_East:
+        NE.render();
+        break;
+
+    case South_West:
+        SW.render();
+        break;
+
+    case South_East:
+        SE.render();
+        break;
+
+    default: // Nuetral
+        O.render();
+        break;
+    }
+
+    RENDER_BUTTON_STATE(a_button, A);
+    RENDER_BUTTON_STATE(b_button, B);
+    RENDER_BUTTON_STATE(c_button, C);
+    DX.render();
+
     window.render();
 }
+
+static void init_sprites(void)
+{
+    reference.init(window.renderer, "sprites/00.png");
+
+    N.init(window.renderer, "sprites/N.png", 3.0, 0, 0);
+    E.init(window.renderer, "sprites/E.png", 3.0, 0, 0);
+    S.init(window.renderer, "sprites/S.png", 3.0, 0, 0);
+    W.init(window.renderer, "sprites/W.png", 3.0, 0, 0);
+    NW.init(window.renderer, "sprites/NW.png", 3.0, 0, 0);
+    NE.init(window.renderer, "sprites/NE.png", 3.0, 0, 0);
+    SW.init(window.renderer, "sprites/SW.png", 3.0, 0, 0);
+    SE.init(window.renderer, "sprites/SE.png", 3.0, 0, 0);
+    O.init(window.renderer, "sprites/O.png", 3.0, 0, 0);
+    
+    A1.init(window.renderer, "sprites/A1.png", 3.0, 200, 0);
+    A2.init(window.renderer, "sprites/A2.png", 3.0, 200, 0);
+    B1.init(window.renderer, "sprites/B1.png", 3.0, 400, 0);
+    B2.init(window.renderer, "sprites/B2.png", 3.0, 400, 0);
+    C1.init(window.renderer, "sprites/C1.png", 3.0, 600, 0);
+    C2.init(window.renderer, "sprites/C2.png", 3.0, 600, 0);
+    D1.init(window.renderer, "sprites/D1.png", 3.0, 800, 0);
+    D2.init(window.renderer, "sprites/D2.png", 3.0, 800, 0);
+    DX.init(window.renderer, "sprites/DX.png", 3.0, 800, 0);
+}
+
 
 static bool persist(bool condition, int *counter)
 {
     if (condition)
     {
-        if (*counter < 3)
+        if (*counter < STICK_BUFFER)
         {
             *counter += 1;
         }
-        if (*counter >= 3)
+        if (*counter >= STICK_BUFFER)
         {
             return true;
         }
