@@ -1,4 +1,6 @@
 #include "main.h"
+#include "classes/stick_class.h"
+#include "classes/input_display_class.h"
 
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -10,39 +12,20 @@
 #define CONCAT(button_letter, num) button_letter##num
 #define RENDER_BUTTON_STATE(button_state, button_letter)\
     if (button_state)\
-    CONCAT(button_letter, 2).render();\
+        input_display.CONCAT(button_letter, 2).render();\
     else\
-    CONCAT(button_letter, 1).render();
+        input_display.CONCAT(button_letter, 1).render();
 
 #define FPS (120)
 #define STICK_BUFFER (FPS/20)
 
 Window window;
+InputDisplay input_display;
 
 TextureImage reference;
 
-TextureImage N;
-TextureImage E;
-TextureImage S;
-TextureImage W;
-TextureImage NW;
-TextureImage NE;
-TextureImage SW;
-TextureImage SE;
-TextureImage O;
-
-TextureImage A1;
-TextureImage A2;
-TextureImage B1;
-TextureImage B2;
-TextureImage C1;
-TextureImage C2;
-TextureImage D1;
-TextureImage D2;
-TextureImage DX;
-
 void run_input_dispay(void);
-void render_screen(stick_state_e stick_state, bool a_button, bool b_button, bool c_button, bool d_button);
+void render_screen(void);
 static void init_sprites(void);
 static bool persist(bool condition, int *counter);
 
@@ -50,7 +33,8 @@ int main(int argc, char* args[]) {
     //Init SDL Stuff
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    window.init(1280, 720, "Input Display");
+    window.init(1280, 720, "Input Display", (/*SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS |*/ SDL_WINDOW_ALWAYS_ON_TOP));
+    input_display.init(&window);
 
     init_sprites();
     run_input_dispay();
@@ -70,12 +54,6 @@ void run_input_dispay()
     Uint32 starting_tick;
 
     SDL_Joystick *joy_1 = NULL;
-
-    stick_state_t stick_state = Nuetral;
-    bool a_button = false;
-    bool b_button = false;
-    bool c_button = false;
-    bool d_button = false;
 
     int left_counter       = 0;
     int right_counter      = 0;
@@ -122,7 +100,10 @@ void run_input_dispay()
 
             if (event.type == SDL_KEYDOWN)
             {
-
+                // if (event.key.keysym.sym == SDLK_ESCAPE)
+                // {
+                //     return;
+                // }
             }
 
             if (event.type == SDL_JOYHATMOTION)
@@ -177,22 +158,22 @@ void run_input_dispay()
             {
                 if (event.jbutton.button == 0)
                 {
-                    a_button = true;
+                    input_display.A_pressed = true;
                 }
 
                 if (event.jbutton.button == 3)
                 {
-                    b_button = true;
+                    input_display.B_pressed = true;
                 }
 
                 if (event.jbutton.button == 5)
                 {
-                    c_button = true;
+                    input_display.C_pressed = true;
                 }
 
                 if (event.jbutton.button == 4)
                 {
-                    d_button = true;
+                    input_display.D_pressed = true;
                 }
             }
 
@@ -200,22 +181,22 @@ void run_input_dispay()
             {
                 if (event.jbutton.button == 0)
                 {
-                    a_button = false;
+                    input_display.A_pressed = false;
                 }
 
                 if (event.jbutton.button == 3)
                 {
-                    b_button = false;
+                    input_display.B_pressed = false;
                 }
 
                 if (event.jbutton.button == 5)
                 {
-                    c_button = false;
+                    input_display.C_pressed = false;
                 }
 
                 if (event.jbutton.button == 4)
                 {
-                    d_button = false;
+                    input_display.D_pressed = false;
                 }
             }
 
@@ -223,122 +204,107 @@ void run_input_dispay()
         }
 
         // Determine the state of the stick 
-        stick_state = Nuetral;
+        input_display.stick_state = Nuetral;
         if (persist(left_hold, &left_counter))
         {
-            stick_state = West;
+            input_display.stick_state = West;
         }
 
         if (persist(right_hold, &right_counter))
         {
-            stick_state = East;
+            input_display.stick_state = East;
         }
 
         if (persist(up_hold, &up_counter))
         {
-            stick_state = North;
+            input_display.stick_state = North;
         }
         if (persist(down_hold, &down_counter))
         {
-            stick_state = South;
+            input_display.stick_state = South;
         }
         if (persist(up_left_hold, &up_left_counter))
         {
-            stick_state = North_East;
+            input_display.stick_state = North_West;
         }
         if (persist(up_right_hold, &up_right_counter))
         {
-            stick_state = North_West;
+            input_display.stick_state = North_East;
         }
         if (persist(down_left_hold, &down_left_counter))
         {
-            stick_state = South_West;
+            input_display.stick_state = South_West;
         }
         if (persist(down_right_hold, &down_right_counter))
         {
-            stick_state = South_East;
+            input_display.stick_state = South_East;
         }
 
-        render_screen(stick_state, a_button, b_button, c_button, d_button);
+        render_screen();
 
         frame_cap(FPS, starting_tick);
     }
 }
 
-void render_screen(stick_state_e stick_state, bool a_button, bool b_button, bool c_button, bool d_button)
+void render_screen()
 {
     window.clear_render();
 
-    switch (stick_state)
+    switch (input_display.stick_state)
     {
     case North:
-        N.render();
+        input_display.N.render();
+        // N.render();
         break;
     
     case South:
-        S.render();
+        input_display.S.render();
         break;
 
     case East:
-        E.render();
+        input_display.E.render();
         break;
 
     case West:
-        W.render();
+        input_display.W.render();
         break;
 
     case North_West:
-        NW.render();
+        input_display.NW.render();
         break;
     
     case North_East:
-        NE.render();
+        input_display.NE.render();
         break;
 
     case South_West:
-        SW.render();
+        input_display.SW.render();
         break;
 
     case South_East:
-        SE.render();
+        input_display.SE.render();
         break;
 
     default: // Nuetral
-        O.render();
+        input_display.O.render();
         break;
     }
 
-    RENDER_BUTTON_STATE(a_button, A);
-    RENDER_BUTTON_STATE(b_button, B);
-    RENDER_BUTTON_STATE(c_button, C);
-    DX.render();
+    RENDER_BUTTON_STATE(input_display.A_pressed, A);
+    RENDER_BUTTON_STATE(input_display.B_pressed, B);
+    RENDER_BUTTON_STATE(input_display.C_pressed, C);
+    input_display.DX.render();
+
+    if (input_display.D_pressed)
+        reference.render();
 
     window.render();
 }
 
 static void init_sprites(void)
 {
-    reference.init(window.renderer, "sprites/00.png");
-
-    N.init(window.renderer, "sprites/N.png", 3.0, 0, 0);
-    E.init(window.renderer, "sprites/E.png", 3.0, 0, 0);
-    S.init(window.renderer, "sprites/S.png", 3.0, 0, 0);
-    W.init(window.renderer, "sprites/W.png", 3.0, 0, 0);
-    NW.init(window.renderer, "sprites/NW.png", 3.0, 0, 0);
-    NE.init(window.renderer, "sprites/NE.png", 3.0, 0, 0);
-    SW.init(window.renderer, "sprites/SW.png", 3.0, 0, 0);
-    SE.init(window.renderer, "sprites/SE.png", 3.0, 0, 0);
-    O.init(window.renderer, "sprites/O.png", 3.0, 0, 0);
-    
-    A1.init(window.renderer, "sprites/A1.png", 3.0, 200, 0);
-    A2.init(window.renderer, "sprites/A2.png", 3.0, 200, 0);
-    B1.init(window.renderer, "sprites/B1.png", 3.0, 400, 0);
-    B2.init(window.renderer, "sprites/B2.png", 3.0, 400, 0);
-    C1.init(window.renderer, "sprites/C1.png", 3.0, 600, 0);
-    C2.init(window.renderer, "sprites/C2.png", 3.0, 600, 0);
-    D1.init(window.renderer, "sprites/D1.png", 3.0, 800, 0);
-    D2.init(window.renderer, "sprites/D2.png", 3.0, 800, 0);
-    DX.init(window.renderer, "sprites/DX.png", 3.0, 800, 0);
+    reference.init(window.renderer, "sprites/00.png", 3.0, 83, 26);
+    reference.set_alpha(100);
 }
 
 
