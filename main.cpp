@@ -19,6 +19,8 @@
 #define FPS (120)
 #define STICK_BUFFER (FPS/20)
 
+// aspect ratio (3:1)
+
 Window window;
 InputDisplay input_display;
 
@@ -33,7 +35,7 @@ int main(int argc, char* args[]) {
     //Init SDL Stuff
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    window.init(1280, 720, "Input Display", (/*SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS |*/ SDL_WINDOW_ALWAYS_ON_TOP));
+    window.init(840, 280, "Input Display", (SDL_WINDOW_RESIZABLE /*SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP*/));
     input_display.init(&window);
 
     init_sprites();
@@ -100,10 +102,16 @@ void run_input_dispay()
 
             if (event.type == SDL_KEYDOWN)
             {
-                // if (event.key.keysym.sym == SDLK_ESCAPE)
-                // {
-                //     return;
-                // }
+
+            }
+
+            if (event.type == SDL_WINDOWEVENT)
+            {
+                if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                {
+                    window.set_window_size(3 * event.window.data2, event.window.data2); // data2 is window height
+                    input_display.resize();
+                }
             }
 
             if (event.type == SDL_JOYHATMOTION)

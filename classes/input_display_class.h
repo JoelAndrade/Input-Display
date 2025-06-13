@@ -14,8 +14,9 @@ public:
     
     InputDisplay();
     InputDisplay(Window *window);
-    
+
     void init(Window *window);
+    void resize();
 
     ~InputDisplay();
 };

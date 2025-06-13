@@ -36,6 +36,7 @@ public:
     Stick(Window *window);
 
     void init(Window *window);
+    void resize(Window *window);
 
     ~Stick();
 };

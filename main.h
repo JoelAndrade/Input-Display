@@ -10,4 +10,4 @@
 extern Window window;
 extern int fps;
 
-#endif // MAIN_H 
+#endif // MAIN_H

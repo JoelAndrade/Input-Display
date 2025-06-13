@@ -28,6 +28,7 @@ public:
     Button(Window *window);
 
     void init(Window *window);
+    void resize(Window *window);
 
     ~Button();
 };

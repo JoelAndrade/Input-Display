@@ -1,4 +1,5 @@
 #include "input_display_class.h"
+#include "common.h"
 
 InputDisplay::InputDisplay(){}
 InputDisplay::InputDisplay(Window *window)
@@ -15,6 +16,12 @@ void InputDisplay::init(Window *window)
 
     Stick::init(window);
     Button::init(window);
+}
+
+void InputDisplay::resize()
+{
+    Stick::resize(window);
+    Button::resize(window);
 }
 
 InputDisplay::~InputDisplay()
