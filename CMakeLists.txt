@@ -10,7 +10,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_executable(main main.cpp)
-add_executable(exe main.cpp)
+add_executable(Input_Display main.cpp images/icon/icon.rc)
 
 target_link_libraries(main
     lib_classes
@@ -21,12 +21,12 @@ target_link_libraries(main
     "-l mingw32"
 )
 
-target_link_libraries(exe
+target_link_libraries(Input_Display
     lib_classes
     lib_SDL2
 )
 
-target_link_libraries(exe
+target_link_libraries(Input_Display
     "-l mingw32"
     "-mwindows"
     "-static-libgcc"

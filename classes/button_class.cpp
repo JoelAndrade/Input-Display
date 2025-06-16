@@ -2,15 +2,15 @@
 #include "common.h"
 
 #define INIT_BUTTON\
-    A1.init(window->renderer, "sprites/A1.png", SCALE(3.0), X_SCALE(227), Y_SCALE(131));\
-    A2.init(window->renderer, "sprites/A2.png", SCALE(3.0), X_SCALE(227), Y_SCALE(131));\
-    B1.init(window->renderer, "sprites/B1.png", SCALE(3.0), X_SCALE(371), Y_SCALE(131));\
-    B2.init(window->renderer, "sprites/B2.png", SCALE(3.0), X_SCALE(371), Y_SCALE(131));\
-    C1.init(window->renderer, "sprites/C1.png", SCALE(3.0), X_SCALE(515), Y_SCALE(131));\
-    C2.init(window->renderer, "sprites/C2.png", SCALE(3.0), X_SCALE(515), Y_SCALE(131));\
-    D1.init(window->renderer, "sprites/D1.png", SCALE(3.0), X_SCALE(659), Y_SCALE(131));\
-    D2.init(window->renderer, "sprites/D2.png", SCALE(3.0), X_SCALE(659), Y_SCALE(131));\
-    DX.init(window->renderer, "sprites/DX.png", SCALE(3.0), X_SCALE(659), Y_SCALE(107));
+    A1.init(window->renderer, "images/sprites/A1.png", SCALE(3.0), X_SCALE(227), Y_SCALE(131));\
+    A2.init(window->renderer, "images/sprites/A2.png", SCALE(3.0), X_SCALE(227), Y_SCALE(131));\
+    B1.init(window->renderer, "images/sprites/B1.png", SCALE(3.0), X_SCALE(371), Y_SCALE(131));\
+    B2.init(window->renderer, "images/sprites/B2.png", SCALE(3.0), X_SCALE(371), Y_SCALE(131));\
+    C1.init(window->renderer, "images/sprites/C1.png", SCALE(3.0), X_SCALE(515), Y_SCALE(131));\
+    C2.init(window->renderer, "images/sprites/C2.png", SCALE(3.0), X_SCALE(515), Y_SCALE(131));\
+    D1.init(window->renderer, "images/sprites/D1.png", SCALE(3.0), X_SCALE(659), Y_SCALE(131));\
+    D2.init(window->renderer, "images/sprites/D2.png", SCALE(3.0), X_SCALE(659), Y_SCALE(131));\
+    DX.init(window->renderer, "images/sprites/DX.png", SCALE(3.0), X_SCALE(659), Y_SCALE(107));
 
 Button::Button() {}
 Button::Button(Window *window)

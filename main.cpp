@@ -312,7 +312,7 @@ void render_screen()
 
 static void init_sprites(void)
 {
-    reference.init(window.renderer, "sprites/00.png", 3.0, 83, 26);
+    reference.init(window.renderer, "images/sprites/00.png", 3.0, 83, 26);
     reference.set_alpha(100);
 }
 
