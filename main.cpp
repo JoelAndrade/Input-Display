@@ -34,11 +34,12 @@ static bool persist(bool condition, int *counter);
 int main(int argc, char* args[]) {
     //Init SDL Stuff
     SDL_Init(SDL_INIT_EVERYTHING);
-
-    window.init(840, 280, "Input Display", (SDL_WINDOW_RESIZABLE /*SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP*/));
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1"); // Allow background joy stick inputs
+    window.init(840, 280, "Input Display", (SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN));
+    window.render_color = SDL_violet;
     input_display.init(&window);
 
-    init_sprites();
+    // init_sprites();
     run_input_dispay();
 
     // Save and clean everything
@@ -77,7 +78,7 @@ void run_input_dispay()
     
     if (SDL_NumJoysticks() < 1)
     {
-        std::cout << "No Joy\n";
+        return;
     }
     else
     {
