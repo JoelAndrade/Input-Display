@@ -17,7 +17,7 @@
         input_display.CONCAT(button_letter, 1).render();
 
 #define FPS (120)
-#define STICK_BUFFER (FPS/20)
+#define STICK_BUFFER (FPS/30)
 
 // aspect ratio (3:1)
 
@@ -128,6 +128,7 @@ void run_input_dispay()
 
                 if (event.jhat.value == SDL_HAT_CENTERED)
                 {
+                    input_display.stick_state = Nuetral;
                 }
                 if (event.jhat.value == SDL_HAT_LEFT)
                 {
@@ -169,17 +170,14 @@ void run_input_dispay()
                 {
                     input_display.A_pressed = true;
                 }
-
                 if (event.jbutton.button == 3)
                 {
                     input_display.B_pressed = true;
                 }
-
                 if (event.jbutton.button == 5)
                 {
                     input_display.C_pressed = true;
                 }
-
                 if (event.jbutton.button == 4)
                 {
                     input_display.D_pressed = true;
@@ -192,38 +190,30 @@ void run_input_dispay()
                 {
                     input_display.A_pressed = false;
                 }
-
                 if (event.jbutton.button == 3)
                 {
                     input_display.B_pressed = false;
                 }
-
                 if (event.jbutton.button == 5)
                 {
                     input_display.C_pressed = false;
                 }
-
                 if (event.jbutton.button == 4)
                 {
                     input_display.D_pressed = false;
                 }
             }
-
-
         }
 
-        // Determine the state of the stick 
-        input_display.stick_state = Nuetral;
+        // Determine the state of the stick
         if (persist(left_hold, &left_counter))
         {
             input_display.stick_state = West;
         }
-
         if (persist(right_hold, &right_counter))
         {
             input_display.stick_state = East;
         }
-
         if (persist(up_hold, &up_counter))
         {
             input_display.stick_state = North;
@@ -263,7 +253,6 @@ void render_screen()
     {
     case North:
         input_display.N.render();
-        // N.render();
         break;
     
     case South:
