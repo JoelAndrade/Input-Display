@@ -26,12 +26,14 @@ InputDisplay input_display;
 
 TextureImage reference;
 
+bool d_button_enable;
+
 void run_input_dispay(void);
 void render_screen(void);
 static void init_sprites(void);
 static bool persist(bool condition, int *counter);
 
-int main(int argc, char* args[]) {
+int main(int argc, char *args[]) {
     //Init SDL Stuff
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1"); // Allow background joy stick inputs
@@ -39,7 +41,7 @@ int main(int argc, char* args[]) {
     window.render_color = SDL_violet;
     input_display.init(&window);
 
-    // init_sprites();
+    d_button_enable = false;
     run_input_dispay();
 
     // Save and clean everything
@@ -95,7 +97,7 @@ void run_input_dispay()
             {
                 return;
             }
-
+            
             if (event.type == SDL_MOUSEBUTTONUP)
             {
 
@@ -103,7 +105,10 @@ void run_input_dispay()
 
             if (event.type == SDL_KEYDOWN)
             {
-
+                if (event.key.keysym.sym == SDLK_SPACE)
+                {
+                    d_button_enable = !d_button_enable;
+                }
             }
 
             if (event.type == SDL_WINDOWEVENT)
@@ -291,10 +296,17 @@ void render_screen()
     RENDER_BUTTON_STATE(input_display.A_pressed, A);
     RENDER_BUTTON_STATE(input_display.B_pressed, B);
     RENDER_BUTTON_STATE(input_display.C_pressed, C);
-    input_display.DX.render();
+    if (d_button_enable)
+    {
+        RENDER_BUTTON_STATE(input_display.D_pressed, D);
+    }
+    else
+    {
+        input_display.DX.render();
+    }
 
-    if (input_display.D_pressed)
-        reference.render();
+    // if (input_display.D_pressed)
+    //     reference.render();
 
     window.render();
 }
